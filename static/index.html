@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CYBERGEN Registration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Sora:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#101114; --crimson:#C81D3A; --silver:#C9CDD3; --text:#F7F7F8;
+  --panel:#16171B; --line:rgba(201,205,211,.26); --muted:rgba(247,247,248,.66);
+  --cut:18px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; color:var(--text); min-height:100vh;
+  font-family:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif; font-size:16px; line-height:1.55;
+  padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  background:
+    radial-gradient(900px 520px at 100% -8%,rgba(200,29,58,.22),transparent 62%),
+    radial-gradient(700px 420px at -10% 40%,rgba(201,205,211,.07),transparent 65%),
+    linear-gradient(rgba(201,205,211,.035) 1px,transparent 1px) 0 0/44px 44px,
+    linear-gradient(90deg,rgba(201,205,211,.035) 1px,transparent 1px) 0 0/44px 44px,
+    var(--bg);
+  background-attachment:fixed;
+}
+h1,h2{font-family:"Sora","Manrope",system-ui,sans-serif; font-weight:600; margin:0}
+.wrap{max-width:700px; margin:0 auto; padding:0 18px 64px; position:relative}
+
+/* progress */
+.bar{position:fixed; top:0; left:0; right:0; height:3px; background:rgba(201,205,211,.12); z-index:10}
+.bar i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--crimson),#ff4d68); transition:width .3s ease; box-shadow:0 0 12px rgba(200,29,58,.8)}
+
+/* hero */
+.hero{position:relative; padding:64px 0 30px}
+.geo{position:absolute; right:-40px; top:18px; width:min(300px,62vw); opacity:.9; pointer-events:none; animation:float 4.5s ease-in-out infinite; filter:drop-shadow(0 0 28px rgba(200,29,58,.45))}
+.hero>*:not(.geo){position:relative}
+.hero h1{
+  font-size:clamp(2.9rem,14vw,5.4rem); line-height:1; letter-spacing:.015em; display:inline-block;
+  background:linear-gradient(180deg,#fff 0%,var(--silver) 52%,#858a93 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  animation:rise .8s cubic-bezier(.2,.8,.2,1) both;
+}
+.slash{display:block; height:7px; width:min(280px,64%); margin-top:16px; background:var(--crimson);
+  clip-path:polygon(0 0,100% 0,calc(100% - 16px) 100%,0 100%); transform-origin:left; animation:wipe .9s .25s cubic-bezier(.2,.8,.2,1) both; box-shadow:0 0 24px rgba(200,29,58,.7)}
+.hero p{margin:18px 0 0; color:var(--muted); max-width:40ch; font-size:1.05rem}
+.facts{display:flex; flex-wrap:wrap; gap:10px; margin-top:24px}
+.fact{
+  padding:9px 18px 9px 14px; border:1px solid var(--line); background:rgba(22,23,27,.8); font-weight:700; font-size:.92rem;
+  clip-path:polygon(0 0,calc(100% - 12px) 0,100% 100%,0 100%);
+}
+.fact b{color:var(--crimson); font-family:"Sora",sans-serif; margin-right:6px}
+@keyframes rise{from{opacity:0; transform:translateY(24px)}to{opacity:1; transform:none}}
+@keyframes wipe{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-18px) rotate(3deg)}}
+@keyframes drift{from{transform:translate3d(0,0,0)}to{transform:translate3d(-40px,30px,0)}}
+@keyframes sweep{0%{transform:translateX(-60vw) skewX(-24deg)}100%{transform:translateX(160vw) skewX(-24deg)}}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-26px) rotate(14deg)}}
+
+/* background layers */
+.bg{position:fixed; inset:0; z-index:-1; overflow:hidden; pointer-events:none}
+.bg .band{position:absolute; inset:-10%; animation:drift 16s ease-in-out infinite alternate;
+  background:
+    linear-gradient(118deg,transparent 0 46%,rgba(200,29,58,.16) 46% 46.6%,transparent 46.6% 62%,rgba(201,205,211,.09) 62% 62.3%,transparent 62.3% 80%,rgba(200,29,58,.10) 80% 80.5%,transparent 80.5%)}
+.bg .wedge{position:absolute; right:-12%; bottom:-18%; width:70vw; max-width:760px; aspect-ratio:1;
+  background:linear-gradient(145deg,rgba(200,29,58,.22),rgba(200,29,58,0) 65%);
+  clip-path:polygon(50% 0,100% 28%,100% 72%,50% 100%,0 72%,0 28%); animation:drift 20s ease-in-out infinite alternate-reverse}
+.bg .streak{position:absolute; top:0; bottom:0; left:0; width:90px;
+  background:linear-gradient(90deg,transparent,rgba(247,247,248,.07),transparent); animation:sweep 11s linear infinite}
+.bg svg{position:absolute; fill:none; stroke:var(--silver); stroke-width:1.5; opacity:.2; animation:bob 7s ease-in-out infinite}
+.bg svg.h1{left:4%; top:46%; width:70px}
+.bg svg.h2{right:8%; top:62%; width:46px; animation-duration:5.5s; animation-delay:-2s; stroke:var(--crimson); opacity:.4}
+.bg svg.h3{left:46%; top:88%; width:56px; animation-duration:8s; animation-delay:-4s}
+
+/* cards */
+.card{
+  background:var(--line); padding:1px; margin:0 0 20px; transition:background .2s;
+  clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut));
+}
+.card:focus-within{background:linear-gradient(135deg,var(--crimson),var(--silver) 70%)}
+.card>fieldset{
+  margin:0; border:0; min-width:0; padding:22px 20px 22px; position:relative;
+  background:linear-gradient(160deg,#1b1c21,var(--panel) 45%);
+  clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut));
+}
+.card.lead>fieldset{background:linear-gradient(160deg,#2a1218,var(--panel) 55%)}
+.card>fieldset::before{content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--silver); opacity:.55}
+.card.lead>fieldset::before{background:var(--crimson); opacity:1; box-shadow:0 0 14px var(--crimson)}
+legend{float:left; width:100%; padding:0; margin:0 0 16px; display:flex; align-items:center; gap:12px;
+  font-family:"Sora",system-ui,sans-serif; font-weight:600; font-size:1.25rem}
+legend::after{content:""; flex:1; height:1px; background:linear-gradient(90deg,var(--line),transparent)}
+legend small{font-family:"Manrope",sans-serif; font-weight:500; font-size:.8rem; color:var(--muted); order:2}
+legend+*{clear:both}
+.grid{display:grid; gap:14px}
+@media(min-width:560px){.two{grid-template-columns:1fr 1fr}}
+.stack{display:grid; gap:14px}
+
+label,.lbl{display:block; font-size:.86rem; font-weight:500; margin:0 0 6px; color:var(--silver)}
+input[type=text],input[type=tel],select{
+  width:100%; padding:14px; font:inherit; font-size:1rem; color:var(--text); border-radius:0;
+  background:rgba(16,17,20,.9); border:1px solid var(--line); transition:border-color .15s, box-shadow .15s, background .15s;
+}
+select{appearance:none; -webkit-appearance:none; cursor:pointer; padding-right:42px;
+  background-image:linear-gradient(45deg,transparent 50%,var(--silver) 50%),linear-gradient(135deg,var(--silver) 50%,transparent 50%);
+  background-position:calc(100% - 20px) 50%,calc(100% - 14px) 50%; background-size:6px 6px; background-repeat:no-repeat}
+select:invalid{color:rgba(247,247,248,.4)}
+select option{color:var(--text); background:var(--panel)}
+input::placeholder{color:rgba(247,247,248,.3)}
+input:hover,select:hover{border-color:var(--silver)}
+input:focus-visible,select:focus-visible{outline:none; border-color:var(--crimson); background:#0c0d0f; box-shadow:0 0 0 3px rgba(200,29,58,.3)}
+.bad{border-color:var(--crimson)!important; box-shadow:0 0 0 3px rgba(200,29,58,.3)}
+
+.years{display:flex; gap:10px}
+.years label{margin:0; flex:1; position:relative}
+.years input{position:absolute; opacity:0; inset:0; cursor:pointer; margin:0}
+.years span{
+  display:block; text-align:center; padding:13px 0; border:1px solid var(--line); background:rgba(16,17,20,.9);
+  font-family:"Sora",system-ui,sans-serif; font-weight:600; transition:background .15s,border-color .15s,transform .15s;
+  clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);
+}
+.years input:hover+span{border-color:var(--silver)}
+.years input:checked+span{background:var(--crimson); border-color:var(--crimson); transform:translateY(-1px)}
+.years input:focus-visible+span{outline:2px solid var(--silver); outline-offset:2px}
+
+.note{margin:0 0 16px; padding:13px 15px; background:rgba(200,29,58,.1); border-left:3px solid var(--crimson); font-size:.93rem}
+.note b{font-family:"Sora",sans-serif}
+
+button{
+  font-family:"Sora",system-ui,sans-serif; font-weight:600; font-size:1.08rem; cursor:pointer;
+  width:100%; padding:18px; border:0; color:var(--text);
+  background:linear-gradient(135deg,#e0253f,var(--crimson) 60%,#9d1530);
+  clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));
+  transition:filter .15s, transform .1s;
+}
+button:hover{filter:brightness(1.12)}
+button:active{transform:translateY(1px)}
+button:focus-visible{outline:2px solid var(--silver); outline-offset:3px}
+button:disabled{filter:grayscale(.6) brightness(.7); cursor:progress}
+.err{min-height:1.4em; margin:0 0 12px; color:#ff8da0; font-size:.93rem}
+
+/* success */
+#done{display:none; animation:rise .6s both}
+.tick{width:64px; height:64px; margin-bottom:6px}
+.tick path{stroke-dasharray:60; stroke-dashoffset:60; animation:draw .7s .3s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.done h2{font-size:clamp(1.6rem,7vw,2.2rem); margin:4px 0 6px}
+.people{list-style:none; padding:0; margin:18px 0 0; display:grid; gap:8px}
+.people li{padding:12px 14px; background:rgba(16,17,20,.9); border:1px solid var(--line); border-left:3px solid var(--crimson); display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap}
+.people small{color:var(--muted)}
+.fine{color:var(--muted); font-size:.92rem; margin:18px 0 0}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}.tick path{stroke-dashoffset:0}}
+</style>
+</head>
+<body>
+<div class="bar" aria-hidden="true"><i id="prog"></i></div>
+<div class="bg" aria-hidden="true">
+  <div class="band"></div><div class="wedge"></div><div class="streak"></div>
+  <svg class="h1" viewBox="0 0 100 100"><polygon points="50,4 93,27 93,73 50,96 7,73 7,27"/></svg>
+  <svg class="h2" viewBox="0 0 100 100"><polygon points="50,4 93,27 93,73 50,96 7,73 7,27"/></svg>
+  <svg class="h3" viewBox="0 0 100 100"><polygon points="50,4 93,27 93,73 50,96 7,73 7,27"/></svg>
+</div>
+<main class="wrap">
+  <header class="hero">
+    <svg class="geo" viewBox="0 0 300 300" aria-hidden="true">
+      <defs>
+        <linearGradient id="ch" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F7F7F8"/><stop offset=".5" stop-color="#C9CDD3"/><stop offset="1" stop-color="#6e737c"/></linearGradient>
+        <linearGradient id="cr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff4d68"/><stop offset="1" stop-color="#C81D3A"/></linearGradient>
+      </defs>
+      <polygon points="150,10 270,80 270,220 150,290 30,220 30,80" fill="none" stroke="url(#ch)" stroke-width="2" opacity=".55"/>
+      <polygon points="150,52 234,100 234,200 150,248 66,200 66,100" fill="none" stroke="url(#ch)" stroke-width="1.5" opacity=".4"/>
+      <polygon points="150,10 270,80 150,150 30,80" fill="url(#cr)" opacity=".9"/>
+      <polygon points="30,80 150,150 150,290 30,220" fill="url(#ch)" opacity=".16"/>
+      <polygon points="270,80 270,220 150,290 150,150" fill="url(#ch)" opacity=".07"/>
+      <line x1="150" y1="150" x2="150" y2="290" stroke="url(#ch)" stroke-width="1.5" opacity=".6"/>
+    </svg>
+    <h1>CYBERGEN</h1>
+    <i class="slash"></i>
+    <p>Hackathon registration. Fill in one form for your whole team.</p>
+    <div class="facts">
+      <span class="fact"><b>4</b>per team</span>
+      <span class="fact"><b>₹<span id="fee"></span></b>per team</span>
+    </div>
+  </header>
+
+  <form id="form" novalidate>
+    <div class="card lead"><fieldset>
+      <legend>Team Leader</legend>
+      <div class="stack">
+        <div>
+          <label for="lname">Full name</label>
+          <input type="text" id="lname" autocomplete="name" maxlength="80" required>
+        </div>
+        <div>
+          <label for="lreg">Register number</label>
+          <input type="text" id="lreg" autocapitalize="characters" autocomplete="off" maxlength="30" required>
+        </div>
+        <div class="grid two">
+          <div>
+            <label for="phone">Phone number</label>
+            <input type="tel" id="phone" inputmode="numeric" autocomplete="tel-national" maxlength="10" placeholder="10 digits" required>
+          </div>
+          <div>
+            <label for="dept">Department</label>
+            <select id="dept" required>
+              <option value="" selected disabled>Select department</option>
+              <option>B.Sc. ISDF</option>
+              <option>B.Sc. AIDS</option>
+              <option>M.Sc. ISDF</option>
+              <option>M.Sc. AIDS</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <span class="lbl" id="yl">Year</span>
+          <div class="years" role="radiogroup" aria-labelledby="yl">
+            <label><input type="radio" name="year" value="I" required><span>I</span></label>
+            <label><input type="radio" name="year" value="II"><span>II</span></label>
+            <label><input type="radio" name="year" value="III"><span>III</span></label>
+          </div>
+        </div>
+      </div>
+    </fieldset></div>
+
+    <div class="card"><fieldset>
+      <legend>Member 1</legend>
+      <div class="stack">
+        <div><label for="m1n">Full name</label><input type="text" id="m1n" maxlength="80" required></div>
+        <div><label for="m1r">Register number</label><input type="text" id="m1r" autocapitalize="characters" autocomplete="off" maxlength="30" required></div>
+      </div>
+    </fieldset></div>
+
+    <div class="card"><fieldset>
+      <legend>Member 2</legend>
+      <div class="stack">
+        <div><label for="m2n">Full name</label><input type="text" id="m2n" maxlength="80" required></div>
+        <div><label for="m2r">Register number</label><input type="text" id="m2r" autocapitalize="characters" autocomplete="off" maxlength="30" required></div>
+      </div>
+    </fieldset></div>
+
+    <div class="card"><fieldset>
+      <legend>Member 3</legend>
+      <div class="stack">
+        <div><label for="m3n">Full name</label><input type="text" id="m3n" maxlength="80" required></div>
+        <div><label for="m3r">Register number</label><input type="text" id="m3r" autocapitalize="characters" autocomplete="off" maxlength="30" required></div>
+      </div>
+    </fieldset></div>
+
+    <div class="card lead"><fieldset>
+      <legend>Payment</legend>
+      <p class="note">Pay the team fee of <b>₹<span class="feeb"></span></b>, then enter the UPI transaction ID from your payment app.</p>
+      <!-- Add your payment QR here, e.g. <img src="qr.png" alt="Payment QR" width="180"> -->
+      <label for="txn">UPI transaction ID</label>
+      <input type="text" id="txn" autocapitalize="characters" autocomplete="off" maxlength="40" required>
+    </fieldset></div>
+
+    <p class="err" id="err" role="alert" aria-live="polite"></p>
+    <button type="submit" id="go">Register team</button>
+  </form>
+
+  <section id="done" class="done" aria-live="polite">
+    <div class="card lead"><fieldset>
+      <svg class="tick" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+        <polygon points="32,3 58,18 58,46 32,61 6,46 6,18" stroke="#C9CDD3" stroke-width="2"/>
+        <path d="M20 33l8 8 16-17" stroke="#C81D3A" stroke-width="5" stroke-linecap="square"/>
+      </svg>
+      <h2>Registration received</h2>
+      <ul class="people" id="plist"></ul>
+      <p class="fine">You're confirmed once the organisers verify your payment.</p>
+    </fieldset></div>
+  </section>
+</main>
+
+<script>
+const FEE = 400;
+
+const $ = id => document.getElementById(id);
+$("fee").textContent = FEE;
+document.querySelector(".feeb").textContent = FEE;
+const form = $("form"), err = $("err"), go = $("go");
+const clean = s => s.replace(/\s+/g," ").trim();
+
+/* progress bar: counts the required fields filled in */
+const required = [...form.querySelectorAll("input[required]:not([type=radio]),select[required]")];
+function progress(){
+  let done = required.filter(el => el.value.trim()).length;
+  if(form.querySelector('input[name=year]:checked')) done++;
+  $("prog").style.width = (done / (required.length + 1) * 100) + "%";
+}
+form.addEventListener("input", e => { e.target.classList.remove("bad"); progress(); });
+form.addEventListener("change", progress);
+
+function fail(msg, el){
+  err.textContent = msg;
+  if(el){ el.classList.add("bad"); el.focus(); }
+}
+
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  err.textContent = "";
+  form.querySelectorAll(".bad").forEach(x => x.classList.remove("bad"));
+
+  const people = [
+    {role:"Team Leader", n:$("lname"), r:$("lreg")},
+    {role:"Member 1", n:$("m1n"), r:$("m1r")},
+    {role:"Member 2", n:$("m2n"), r:$("m2r")},
+    {role:"Member 3", n:$("m3n"), r:$("m3r")},
+  ];
+  for(const p of people){
+    p.n.value = clean(p.n.value); p.r.value = clean(p.r.value).toUpperCase();
+    if(!p.n.value) return fail(`Enter the full name for ${p.role}.`, p.n);
+    if(!p.r.value) return fail(`Enter the register number for ${p.role}.`, p.r);
+  }
+  const phone = $("phone"); phone.value = phone.value.replace(/\D/g,"");
+  if(!/^\d{10}$/.test(phone.value)) return fail("Enter a 10-digit phone number.", phone);
+  const dept = $("dept");
+  if(!dept.value) return fail("Select the department.", dept);
+  const year = form.querySelector('input[name=year]:checked');
+  if(!year) return fail("Select the team leader's year.", form.querySelector('input[name=year]'));
+  const txn = $("txn"); txn.value = clean(txn.value).toUpperCase();
+  if(txn.value.length < 6) return fail("Enter the UPI transaction ID from your payment app.", txn);
+
+  const seen = new Set();
+  for(const p of people){
+    if(seen.has(p.r.value)) return fail(`${p.r.value} is entered twice. Each person needs their own register number.`, p.r);
+    seen.add(p.r.value);
+  }
+
+  go.disabled = true; go.textContent = "Sending…";
+  let data;
+  try{
+    const res = await fetch("/api/register", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        leader:{name:people[0].n.value, reg:people[0].r.value},
+        members: people.slice(1).map(p => ({name:p.n.value, reg:p.r.value})),
+        phone:phone.value, dept:dept.value, year:year.value, txn:txn.value
+      })
+    });
+    data = await res.json().catch(() => ({}));
+    if(!res.ok) throw new Error(data.error || "Something went wrong. Please try again.");
+  }catch(ex){
+    go.disabled = false; go.textContent = "Register team";
+    return fail(ex instanceof TypeError ? "Couldn't reach the server. Check your connection and try again." : ex.message);
+  }
+
+  $("plist").innerHTML = "";
+  people.forEach(p => {
+    const li = document.createElement("li");
+    const a = document.createElement("span"); a.textContent = p.n.value;
+    const b = document.createElement("small"); b.textContent = p.role;
+    li.append(a,b); $("plist").append(li);
+  });
+  $("prog").style.width = "100%";
+  form.style.display = "none";
+  $("done").style.display = "block";
+  window.scrollTo({top:0, behavior:"smooth"});
+});
+</script>
+</body>
+</html>
