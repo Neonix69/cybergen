@@ -125,6 +125,12 @@ input:focus-visible,select:focus-visible{outline:none; border-color:var(--crimso
 .years input:checked+span{background:var(--crimson); border-color:var(--crimson); transform:translateY(-1px)}
 .years input:focus-visible+span{outline:2px solid var(--silver); outline-offset:2px}
 
+.drop{display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center; padding:22px 14px; margin:0; cursor:pointer;
+  border:1px dashed var(--silver); background:rgba(16,17,20,.9); color:var(--silver); font-size:.95rem; transition:border-color .15s, background .15s}
+.drop:hover,.drop:focus-within{border-color:var(--crimson); background:#0c0d0f}
+.drop input{position:absolute; width:1px; height:1px; opacity:0; pointer-events:none}
+.drop.has{border-style:solid; border-color:var(--crimson); color:var(--text)}
+.drop img{max-height:150px; max-width:100%; border:1px solid var(--line)}
 .note{margin:0 0 16px; padding:13px 15px; background:rgba(200,29,58,.1); border-left:3px solid var(--crimson); font-size:.93rem}
 .note b{font-family:"Sora",sans-serif}
 
@@ -251,10 +257,15 @@ button:disabled{filter:grayscale(.6) brightness(.7); cursor:progress}
 
     <div class="card lead"><fieldset>
       <legend>Payment</legend>
-      <p class="note">Pay the team fee of <b>₹<span class="feeb"></span></b>, then enter the UPI transaction ID from your payment app.</p>
+      <p class="note">Pay the team fee of <b>₹<span class="feeb"></span></b>, then upload a screenshot of the payment confirmation.</p>
       <!-- Add your payment QR here, e.g. <img src="qr.png" alt="Payment QR" width="180"> -->
-      <label for="txn">UPI transaction ID</label>
-      <input type="text" id="txn" autocapitalize="characters" autocomplete="off" maxlength="40" required>
+      <label for="shot">Payment screenshot</label>
+      <label class="drop" for="shot" id="drop">
+        <input type="file" id="shot" accept="image/jpeg,image/png,image/webp" required>
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 16V4m0 0l-5 5m5-5l5 5M4 16v4h16v-4"/></svg>
+        <span id="dropText">Tap to choose a screenshot</span>
+        <img id="thumb" alt="Screenshot preview" hidden>
+      </label>
     </fieldset></div>
 
     <p class="err" id="err" role="alert" aria-live="polite"></p>
@@ -298,6 +309,32 @@ function fail(msg, el){
   if(el){ el.classList.add("bad"); el.focus(); }
 }
 
+/* screenshot preview */
+$("shot").addEventListener("change", () => {
+  const f = $("shot").files[0], t = $("thumb");
+  $("drop").classList.remove("bad");
+  if(!f){ t.hidden = true; $("drop").classList.remove("has"); $("dropText").textContent = "Tap to choose a screenshot"; return; }
+  t.src = URL.createObjectURL(f); t.hidden = false;
+  $("drop").classList.add("has"); $("dropText").textContent = f.name;
+});
+
+/* shrink big screenshots so they upload quickly on mobile data */
+function shrink(file){
+  return new Promise(resolve => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const max = 2200, k = Math.min(1, max / Math.max(img.width, img.height));
+      if(k === 1 && file.size < 1.5*1024*1024){ URL.revokeObjectURL(url); return resolve(file); }
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0,0,c.width,c.height); g.drawImage(img,0,0,c.width,c.height);
+      c.toBlob(b => { URL.revokeObjectURL(url); resolve(b || file); }, "image/jpeg", .85);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+    img.src = url;
+  });
+}
+
 form.addEventListener("submit", async e => {
   e.preventDefault();
   err.textContent = "";
@@ -320,8 +357,9 @@ form.addEventListener("submit", async e => {
   if(!dept.value) return fail("Select the department.", dept);
   const year = form.querySelector('input[name=year]:checked');
   if(!year) return fail("Select the team leader's year.", form.querySelector('input[name=year]'));
-  const txn = $("txn"); txn.value = clean(txn.value).toUpperCase();
-  if(txn.value.length < 6) return fail("Enter the UPI transaction ID from your payment app.", txn);
+  const file = $("shot").files[0];
+  if(!file) return fail("Upload your payment screenshot.", $("drop"));
+  if(!/^image\/(jpeg|png|webp)$/.test(file.type)) return fail("Use a JPG, PNG or WebP screenshot.", $("drop"));
 
   const seen = new Set();
   for(const p of people){
@@ -332,14 +370,16 @@ form.addEventListener("submit", async e => {
   go.disabled = true; go.textContent = "Sending…";
   let data;
   try{
-    const res = await fetch("/api/register", {
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({
-        leader:{name:people[0].n.value, reg:people[0].r.value},
-        members: people.slice(1).map(p => ({name:p.n.value, reg:p.r.value})),
-        phone:phone.value, dept:dept.value, year:year.value, txn:txn.value
-      })
-    });
+    const blob = await shrink(file);
+    if(blob.size > 8*1024*1024) throw new Error("That image is too large. Please choose a smaller screenshot.");
+    const fd = new FormData();
+    fd.append("data", JSON.stringify({
+      leader:{name:people[0].n.value, reg:people[0].r.value},
+      members: people.slice(1).map(p => ({name:p.n.value, reg:p.r.value})),
+      phone:phone.value, dept:dept.value, year:year.value
+    }));
+    fd.append("screenshot", blob, "payment." + (blob.type === "image/jpeg" ? "jpg" : file.type.split("/")[1]));
+    const res = await fetch("/api/register", {method:"POST", body:fd});
     data = await res.json().catch(() => ({}));
     if(!res.ok) throw new Error(data.error || "Something went wrong. Please try again.");
   }catch(ex){
